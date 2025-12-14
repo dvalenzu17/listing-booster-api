@@ -1,0 +1,23 @@
+{
+  "name": "listing-booster-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon server.mjs",
+    "start": "node server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "openai": "^6.10.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
