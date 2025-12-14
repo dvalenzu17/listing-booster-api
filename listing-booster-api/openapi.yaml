@@ -1,0 +1,197 @@
+openapi: 3.0.3
+info:
+  title: Ecommerce Listing Booster API
+  version: 1.0.0
+  description: Generate platform-native ecommerce listing copy (title, bullets, description, keywords, ads).
+
+servers:
+  - url: https://listing-booster-api.onrender.com
+    description: Production (Render)
+  - url: http://localhost:3000
+    description: Local dev
+
+paths:
+  /:
+    get:
+      summary: Root
+      responses:
+        "200":
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+              examples:
+                ok:
+                  value: { ok: true }
+
+  /generate-listing:
+    post:
+      summary: Generate listing content
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListingInput"
+            examples:
+              amazon_example:
+                value:
+                  platform: amazon
+                  product_name: Stainless Steel Insulated Water Bottle (24oz)
+                  features:
+                    - Double-wall vacuum insulation
+                    - Leak-proof lid
+                    - BPA-free
+                    - Fits cup holders
+                    - Powder-coated grip
+                  audience: commuters, gym-goers, students
+                  tone: premium
+                  price_point: mid
+                  language: en
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenerateListingSuccess"
+        "400":
+          description: Bad request (validation / upstream error)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized (only if Proxy Secret is enabled and missing/wrong)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+      required: [ok]
+
+    ListingInput:
+      type: object
+      required: [platform, product_name, features]
+      properties:
+        platform:
+          type: string
+          enum: [amazon, etsy, shopify, ebay]
+          default: shopify
+        product_name:
+          type: string
+          minLength: 3
+          maxLength: 120
+        features:
+          type: array
+          minItems: 2
+          maxItems: 12
+          items:
+            type: string
+            minLength: 2
+            maxLength: 200
+        audience:
+          type: string
+          maxLength: 120
+          nullable: true
+        tone:
+          type: string
+          enum: [premium, playful, minimal, bold, luxury]
+          default: premium
+        price_point:
+          type: string
+          enum: [budget, mid, premium]
+          nullable: true
+        language:
+          type: string
+          default: en
+
+    ListingOutput:
+      type: object
+      required: [platform, title, bullets, description, keywords, ad_variations, compliance_notes]
+      properties:
+        platform:
+          type: string
+        title:
+          type: string
+          minLength: 10
+          maxLength: 200
+        bullets:
+          type: array
+          minItems: 5
+          maxItems: 5
+          items:
+            type: string
+            minLength: 10
+            maxLength: 250
+        description:
+          type: string
+          minLength: 50
+          maxLength: 2000
+        keywords:
+          type: array
+          minItems: 8
+          maxItems: 30
+          items:
+            type: string
+            minLength: 2
+            maxLength: 40
+        ad_variations:
+          type: array
+          minItems: 3
+          maxItems: 3
+          items:
+            type: object
+            required: [headline, primary_text, cta]
+            properties:
+              headline:
+                type: string
+                minLength: 5
+                maxLength: 80
+              primary_text:
+                type: string
+                minLength: 20
+                maxLength: 200
+              cta:
+                type: string
+                enum: ["Shop now","Learn more","Buy now","Get yours","See details"]
+        compliance_notes:
+          type: array
+          maxItems: 8
+          items:
+            type: string
+            minLength: 5
+            maxLength: 200
+
+    GenerateListingSuccess:
+      type: object
+      required: [ok, data]
+      properties:
+        ok: { type: boolean }
+        data:
+          $ref: "#/components/schemas/ListingOutput"
+
+    ErrorResponse:
+      type: object
+      required: [ok, error]
+      properties:
+        ok: { type: boolean }
+        error: { type: string }
