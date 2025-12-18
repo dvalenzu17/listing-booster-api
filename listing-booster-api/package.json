@@ -1,20 +1,20 @@
 {
-  "name": "listing-booster-api",
+  "name": "accessibility-scanner-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Accessibility scanner API using Playwright + axe-core",
+  "type": "module",
   "scripts": {
     "dev": "nodemon server.mjs",
     "start": "node server.mjs"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
   "dependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "openai": "^6.10.0",
+    "ipaddr.js": "^2.2.0",
+    "playwright": "^1.49.0",
+    "uuid": "^9.0.1",
     "zod": "^4.1.13"
   },
   "devDependencies": {
